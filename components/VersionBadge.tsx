@@ -2,7 +2,7 @@ import { APP_VERSION } from "@/lib/constants";
 
 export function VersionBadge() {
   return (
-    <div className="text-xs text-gray-400 text-center py-2 select-none">
+    <div className="text-xs text-muted-foreground select-none">
       v{APP_VERSION}
     </div>
   );

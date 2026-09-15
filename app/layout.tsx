@@ -16,13 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Proyecto 2 IA",
-  description: "Estrategia con movimientos de caballo y minimax",
+  title: "MiniMax Challenge",
+  description: "MiniMax Challenge - estrategia con movimientos de caballo y minimax",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "P2 IA",
+    title: "MM Challenge",
   },
   icons: {
     apple: [
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("dark", "h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
+      className={cn("dark", "h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable, "select-none")}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

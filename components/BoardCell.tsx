@@ -84,7 +84,7 @@ export function BoardCell({ state, isSelected, isValidMove, onClick }: BoardCell
 
   return (
     <button
-      className={`aspect-square border border-gray-300 rounded-md flex items-center justify-center ${bg} ${ring} ${cursor} transition-all`}
+      className={`aspect-square border border-border rounded-none flex items-center justify-center ${bg} ${ring} ${cursor} transition-all`}
       onClick={onClick}
       aria-label={`Cell ${state}`}
     >

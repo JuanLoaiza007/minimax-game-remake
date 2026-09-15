@@ -1,7 +1,7 @@
 {
-  "name": "Proyecto 2 IA - Remake",
-  "short_name": "P2 IA",
-  "description": "Estrategia con movimientos de caballo y minimax",
+  "name": "MiniMax Challenge",
+  "short_name": "MM Challenge",
+  "description": "MiniMax Challenge - estrategia con movimientos de caballo",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
