@@ -6,7 +6,7 @@ import { ThinkingIndicator } from "./ThinkingIndicator";
 import { VersionBadge } from "./VersionBadge";
 import { useGameEngine } from "./useGameEngine";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GameScreenProps {
   difficulty: string;
@@ -72,28 +72,27 @@ export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
             <DialogTitle className={`text-center text-2xl ${resultColor}`}>
               {resultText}
             </DialogTitle>
-            <DialogDescription className="text-center">
-              <div className="mt-4">
-                <h2 className="text-sm font-semibold mb-3">Puntuación Final</h2>
-                <div className="flex justify-around">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-emerald-500">{scores[0]}</div>
-                    <div className="text-xs text-muted-foreground">Tú</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-500">{scores[1]}</div>
-                    <div className="text-xs text-muted-foreground">IA</div>
-                  </div>
-                </div>
-              </div>
-            </DialogDescription>
           </DialogHeader>
+
+          <div className="text-center">
+            <p className="text-sm font-semibold mb-3 text-foreground">Puntuación Final</p>
+            <div className="flex justify-around">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-500">{scores[0]}</div>
+                <div className="text-xs text-muted-foreground">Tú</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-500">{scores[1]}</div>
+                <div className="text-xs text-muted-foreground">IA</div>
+              </div>
+            </div>
+          </div>
 
           <Button
             onClick={onMenu}
             variant="default"
             size="lg"
-            className="w-full mt-4"
+            className="w-full"
           >
             Volver al Menú
           </Button>
