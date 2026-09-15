@@ -1,4 +1,4 @@
-# Yoshi's World Remake — Product Backlog
+# Proyecto-2-IA-2024-I — Remake Product Backlog
 
 ## Stack Técnico
 
