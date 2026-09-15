@@ -133,6 +133,7 @@ un jugador humano contra la IA, con menú, game engine, puntuación y dificultad
 **Criterios de Aceptación:**
 - [ ] Existe `GameEngine` (clase o conjunto de funciones) que orquesta el estado de la partida
 - [ ] `currentPlayer` alterna después de cada movimiento válido
+- [ ] Al cambiar de turno, la pieza del jugador actual se selecciona automáticamente y sus movimientos válidos se muestran de inmediato (sin clic extra)
 - [ ] Un movimiento inválido se rechaza sin cambiar turno ni tablero
 - [ ] Se detecta cuándo un jugador no tiene movimientos disponibles
 

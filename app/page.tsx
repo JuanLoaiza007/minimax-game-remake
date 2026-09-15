@@ -1,3 +1,5 @@
+import { GameBoard } from "@/components/GameBoard";
+
 export default function Home() {
-  return <>Hola mundo</>;
+  return <GameBoard />;
 }
