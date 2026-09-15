@@ -3,9 +3,25 @@
 ## Stack Técnico
 
 - **Frontend:** Next.js 16 + React 19 + Tailwind CSS 4 + TypeScript
+- **Modelo:** Lógica pura del juego en `lib/game/` (sin DOM, testeable con Node)
 - **AI:** Minimax con poda alfa-beta (traducción del original Python → TypeScript)
 - **Despliegue:** Online sin backend ni base de datos (estático / Vercel)
 - **PWA:** Manifest + etiquetas meta para instalación en navegador
+- **Versionado:** Semver (`0.x.y` durante desarrollo). La versión se muestra en la interfaz desde Ronda 1.
+
+## Encoding de celdas
+
+El tablero se representa como `CellState[][]`. Cada celda es un string corto:
+
+| Valor | Significado       |
+|-------|-------------------|
+| `"0"` | Vacía             |
+| `"p1"`| Posición jugador 1 |
+| `"p2"`| Posición jugador 2 |
+| `"t1"`| Trail jugador 1   |
+| `"t2"`| Trail jugador 2   |
+
+Expansión futura: `"p3"`, `"p4"`, `"t3"`, `"t4"`, y otros trails especiales según se necesiten.
 
 ## Convención
 
@@ -17,7 +33,7 @@ Ver `docs/BACKLOG_CONVENTION.md` para la convención completa.
 
 ---
 
-## Ronda 1 — Tablero, Movimientos y PWA
+## Ronda 1 — Tablero, Movimientos y PWA — `0.1.0`
 
 **Objetivo:** Construir el núcleo del juego como componentes reutilizables:
 modelo OOP del tablero, grid responsive, validación de movimientos de caballo,
@@ -29,16 +45,18 @@ jugadores, posiciones y movimientos **para** que todo el sistema de juego (2 jug
 variantes) se construya sobre una base sólida y testeable.
 
 **Criterios de Aceptación:**
-- [ ] Existe una clase `Board` que encapsula la matriz de celdas y su manipulación
-- [ ] Existe un tipo `Player` con identificador único (1 y 2)
+- [ ] Existe un tipo `CellState` con valores `"0" | "p1" | "p2" | "t1" | "t2"`, expandible a más jugadores
+- [ ] Existe un tipo `Player` con identificador único (1 y 2 inicialmente, hasta 4 en el type)
 - [ ] Existe un tipo `Position` con fila y columna
 - [ ] Existe un tipo `Move` con origen y destino
+- [ ] Existe una clase `Board` que encapsula la matriz `CellState[][]` y su manipulación
 - [ ] El modelo es puro (sin dependencias del DOM, sin React) y se puede probar con Node
 
 **Tareas:**
-- [ ] Definir tipos: `Position`, `Player`, `Move`, `CellState`, `BoardState`
-- [ ] Implementar `Board`: constructor con dimensiones, get/set de celdas, clonación profunda
-- [ ] Implementar encoding: vacío=0, player1=1, player2=2, trail1=3, trail2=4
+- [ ] Definir tipos: `Position`, `Player`, `Move`, `CellState`, `BoardState` → `lib/game/types.ts`
+- [ ] Implementar `Board`: constructor con dimensiones, get/set de celdas, clonación profunda → `lib/game/board.ts`
+- [ ] Implementar `generateHorseMoves`, `isValidMove`, `isFreePosition` → `lib/game/moves.ts`
+- [ ] Las piezas se colocan en posiciones fijas para Ronda 1 (configurable a futuro)
 - [ ] Escribir tests básicos: crear tablero, colocar jugadores, clonar, leer
 
 ### Objetivo: Grid responsive del tablero
@@ -51,8 +69,9 @@ variantes) se construya sobre una base sólida y testeable.
 - [ ] En móvil (<480px), el tablero ocupa todo el ancho con un margen mínimo
 - [ ] En escritorio (>768px), el tablero tiene un tamaño máximo (no ocupa todo el viewport)
 - [ ] No hay scroll horizontal bajo ninguna circunstancia
-- [ ] Las piezas (player1, player2) se muestran con placeholders visuales distinguibles
+- [ ] Las piezas (player1, player2) se muestran con placeholders circulares de color (no sprites)
 - [ ] Las casillas vacías se ven distintas a las ocupadas
+- [ ] La versión (`0.1.0`) se muestra en la interfaz (footer o esquina)
 
 ### Objetivo: Selección de pieza y validación de movimientos
 **Como** jugador, **quiero** tocar mi pieza y ver a dónde puede moverse
@@ -76,16 +95,36 @@ variantes) se construya sobre una base sólida y testeable.
 - [ ] El proyecto incluye un manifest.json con nombre, descripción, iconos y tema
 - [ ] El layout de Next.js incluye las etiquetas `<link rel="manifest">` y `<meta name="theme-color">`
 - [ ] Lighthouse reporta "Instalable" sin errores críticos
-- [ ] Los iconos placeholder existen en `public/` (192px y 512px)
+- [ ] Los iconos placeholder existen en `public/` (192px y 512px) — SVG generados o colores sólidos
 
 ---
 
-## Ronda 2 — 2 Jugadores Completo
+## Ronda 2 — Clásico (1 vs IA) — `0.2.0`
 
 **Requiere:** Ronda 1 (tablero responsive, selección, validación de movimientos, PWA configurada).
 
-**Objetivo:** Convertir el tablero en un juego completo para dos personas,
-con game engine, turnos, menú principal, puntuación y detección de fin de partida.
+**Objetivo:** Convertir el tablero en el modo de juego principal "Clásico":
+un jugador humano contra la IA, con menú, game engine, puntuación y dificultad seleccionable.
+
+### Objetivo: Menú principal con navegación
+**Como** jugador, **quiero** un menú donde navegar entre modos de juego e información
+**para** iniciar partidas y conocer el proyecto.
+
+**Criterios de Aceptación:**
+- [ ] Pantalla de inicio con título, versión, y opciones de menú
+- [ ] Opción "Clásico" (1 vs IA) → lleva al selector de dificultad
+- [ ] Otras opciones de menú existen pero muestran "Próximamente"
+- [ ] Opción "Sobre Nosotros" con info básica del proyecto
+- [ ] Botón "Volver al Menú" desde cualquier pantalla del juego
+- [ ] El menú es responsive (no se rompe en móvil)
+- [ ] La versión (`0.2.0`) se muestra en el menú
+
+**Tareas:**
+- [ ] Implementar sistema de rutas/pantallas (menú → juego → resultado → menú)
+- [ ] Componente `MainMenu` con navegación
+- [ ] Componentes placeholder para modos futuros (etiqueta "Próximamente")
+- [ ] Pantalla "Sobre Nosotros"
+- [ ] Indicador de versión visible en menú y juego
 
 ### Objetivo: Game Engine con bucle de turnos
 **Como** jugador, **quiero** que el juego alterne turnos y aplique las reglas automáticamente
@@ -97,14 +136,14 @@ con game engine, turnos, menú principal, puntuación y detección de fin de par
 - [ ] Un movimiento inválido se rechaza sin cambiar turno ni tablero
 - [ ] Se detecta cuándo un jugador no tiene movimientos disponibles
 
-### Objetivo: Movimiento completo con actualización del tablero
+### Objetivo: Movimiento completo con trail
 **Como** jugador, **quiero** que al mover una pieza, el tablero se actualice:
 la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 **para** ver el progreso de la partida.
 
 **Criterios de Aceptación:**
-- [ ] Al mover, la celda origen cambia a valor de rastro (3 para player1, 4 para player2)
-- [ ] Al mover, la celda destino recibe el valor del jugador (1 o 2)
+- [ ] Al mover, la celda origen cambia a `"t1"` (humano) o `"t2"` (máquina)
+- [ ] Al mover, la celda destino recibe `"p1"` o `"p2"`
 - [ ] El rastro se distingue visualmente de las piezas activas y de las celdas vacías
 - [ ] La selección se limpia después del movimiento
 
@@ -113,28 +152,11 @@ la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 **para** tener retroalimentación del resultado.
 
 **Criterios de Aceptación:**
-- [ ] La puntuación cuenta las casillas que cada jugador ha ocupado (activas + rastro)
+- [ ] La puntuación cuenta las casillas que cada jugador ha ocupado (`"p"` + `"t"` del jugador)
 - [ ] La UI muestra la puntuación de ambos jugadores, visible siempre
 - [ ] Cuando ningún jugador puede mover, se muestra pantalla de resultado
 - [ ] El resultado indica ganador con puntuación final, o empate
 - [ ] Desde el resultado se puede volver al menú
-
-### Objetivo: Menú principal
-**Como** jugador, **quiero** un menú donde seleccionar "2 Jugadores" e información del juego
-**para** iniciar partidas y conocer el proyecto.
-
-**Criterios de Aceptación:**
-- [ ] Pantalla de inicio con opción "2 Jugadores"
-- [ ] Al seleccionar 2 jugadores, se inicia una partida automáticamente
-- [ ] Botón "Volver al Menú" desde la partida (termina la partida actual)
-- [ ] El menú es responsive (no se rompe en móvil)
-- [ ] Bonus: pantalla "Sobre Nosotros" con info básica
-
----
-
-## Ronda 3 — IA con Minimax
-
-**Requiere:** Ronda 2 (juego 2 jugadores funcional).
 
 ### Objetivo: Port del Minimax original a TypeScript
 **Como** jugador, **quiero** que la IA juegue usando el mismo algoritmo que el juego original
@@ -142,12 +164,13 @@ la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 
 **Criterios de Aceptación:**
 - [ ] `minimax(nodo, profundidad, maximizando, alpha, beta)` existe en TypeScript
-- [ ] `mejorJugada(tablero, profundidad)` devuelve las coordenadas de la mejor jugada para la máquina
+- [ ] `mejorJugada(tablero, profundidad)` devuelve la mejor jugada para la máquina
 - [ ] La heurística usa coeficientes a=1.0, b=1.5, c=0.5, d=0.5
 - [ ] La heurística considera: movimientos propios, movimientos del oponente, control del centro
 - [ ] Poda alfa-beta funciona (se podan ramas demostrablemente)
 - [ ] Las clases `Problema`, `Nodo`, `Heuristica` existen con la misma lógica del original
 - [ ] Sin dependencias del DOM — función pura, testeable con Node
+- [ ] Traducido a TypeScript manteniendo la lógica, con los nuevos tipos de celda (`"p1"`, `"p2"`, etc.)
 
 ### Objetivo: Selector de dificultad
 **Como** jugador, **quiero** elegir entre 3 niveles de dificultad
@@ -155,23 +178,63 @@ la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 
 **Criterios de Aceptación:**
 - [ ] Dificultades: Principiante (profundidad 2), Amateur (4), Experto (6)
-- [ ] El menú muestra selector de dificultad antes de iniciar partida vs IA
+- [ ] El menú muestra selector de dificultad al seleccionar "Clásico"
 - [ ] La dificultad se muestra durante la partida
 
 ### Objetivo: Modo 1 jugador completo
-**Como** jugador, **quiero** seleccionar "1 Jugador", elegir dificultad, y jugar contra la IA
+**Como** jugador, **quiero** seleccionar "Clásico", elegir dificultad, y jugar contra la IA
 **para** partidas individuales.
 
 **Criterios de Aceptación:**
-- [ ] El menú tiene opción "1 Jugador"
-- [ ] Al seleccionarlo, se pide dificultad antes de empezar
+- [ ] Flujo: Menú → Clásico → Elegir dificultad → Jugar
 - [ ] La IA juega automáticamente en su turno
 - [ ] El turno de la IA no congela la interfaz (setTimeout, requestAnimationFrame o similar)
 - [ ] Durante el turno de la IA, se muestra indicador "Pensando..."
 
 ---
 
-## Ronda 4 — Polimento Visual
+## Ronda 3 — Personalizado (N Jugadores) — `0.3.0`
+
+**Requiere:** Ronda 2 (menú, game engine, IA funcional).
+
+**Objetivo:** Permitir partidas configuradas con hasta 4 jugadores,
+cada uno pudiendo ser humano o IA, y tablero de tamaño configurable.
+
+### Objetivo: Ampliar modelo a N jugadores
+**Como** jugador, **quiero** jugar partidas con más de 2 participantes
+**para** partidas con amigos o múltiples IAs.
+
+**Criterios de Aceptación:**
+- [ ] Los tipos soportan hasta 4 jugadores: `"p3"`, `"p4"`, `"t3"`, `"t4"`
+- [ ] El turno circula secuencialmente entre los jugadores activos
+- [ ] El juego termina cuando todos los jugadores no pueden moverse
+- [ ] La puntuación es individual por jugador
+- [ ] Los placeholders tienen colores distintos para cada jugador (4 colores)
+
+### Objetivo: Configuración de partida
+**Como** jugador, **quiero** configurar cuántos jugadores participan y quién es IA
+**para** crear partidas variadas.
+
+**Criterios de Aceptación:**
+- [ ] Pantalla de configuración antes de iniciar partida personalizada
+- [ ] Se puede elegir número de jugadores (2 a 4)
+- [ ] Cada jugador puede ser "Humano" o "IA"
+- [ ] Las IAs usan el minimax con dificultad seleccionable por IA
+- [ ] Se puede configurar el tamaño del tablero (ancho y alto)
+
+### Objetivo: Múltiples IAs en una partida
+**Como** jugador, **quiero** que varias IAs jueguen entre sí o contra humanos
+**para** partidas con múltiples oponentes automatizados.
+
+**Criterios de Aceptación:**
+- [ ] Cada IA juega su turno automáticamente
+- [ ] Las IAs no se bloquean entre sí ni congelan la interfaz
+- [ ] Durante turnos IA, se muestra indicador "Pensando..." (con qué IA)
+- [ ] El minimax funciona correctamente con más de 2 jugadores (la heurística se adapta)
+
+---
+
+## Ronda 4 — Polimento Visual — `0.4.0`
 
 **Requiere:** Ronda 3.
 
@@ -181,7 +244,7 @@ la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 
 **Criterios de Aceptación:**
 - [ ] Los placeholders son reemplazados por sprites finales (SVG, PNG o lo que decidas)
-- [ ] Los sprites distinguen claramente al jugador 1 del jugador 2
+- [ ] Los sprites distinguen claramente a cada jugador
 - [ ] Escalan correctamente en todos los tamaños
 
 ### Objetivo: Animaciones de movimiento
@@ -199,7 +262,7 @@ la pieza se coloca en el destino, la casilla anterior pasa a ser "rastro"
 
 - Historial de partidas en localStorage
 - Sonidos
-- Tableros de diferentes tamaños (variante opcional)
+- Tableros de diferentes tamaños (variante opcional — ya preparado desde Ronda 3)
 - Temas visuales (dark mode incluido)
 - Pantalla "Sobre Nosotros" completa
 - Compartir resultado de partida
