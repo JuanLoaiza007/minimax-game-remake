@@ -1,6 +1,6 @@
 ## Purpose
 
-Defines the core data types, Board representation, and movement rules for the Yoshi's World game — the pure logic layer that all game modes build upon.
+Defines the core data types, Board representation, and movement rules for the game — the pure logic layer that all game modes build upon.
 
 ## ADDED Requirements
 

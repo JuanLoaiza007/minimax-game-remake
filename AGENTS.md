@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Forbidden terms
+
+The name "Yoshi's World" (or any variant using the word "Yoshi") is strictly forbidden. Never use it in code, comments, docs, specs, or any artifact in this repository.

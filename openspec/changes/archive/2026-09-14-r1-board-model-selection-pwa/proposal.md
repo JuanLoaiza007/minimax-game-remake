@@ -1,6 +1,6 @@
 ## Why
 
-The original Yoshi's World game exists only as a Python/PyQt5 desktop application. A web remake makes it accessible on any device without installation. Ronda 1 establishes the foundational layer: a pure game model, a responsive board UI, piece selection with movement validation, and PWA readiness. Subsequent rounds will add the game loop, AI, and customization.
+A web remake of an existing Python desktop game. Ronda 1 establishes the foundational layer: a pure game model, a responsive board UI, piece selection with movement validation, and PWA readiness. Subsequent rounds will add the game loop, AI, and customization.
 
 ## What Changes
 
