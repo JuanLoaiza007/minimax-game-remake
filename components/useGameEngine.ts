@@ -148,5 +148,16 @@ export function useGameEngine(difficultyName: string) {
     }
   }, [state.currentPlayer, state.isThinking, state.gameOver, runAITurn]);
 
-  return { ...state, handleCellClick };
+  const dismissResult = useCallback(() => {
+    setState(getState({ resultVisible: false }));
+  }, [getState]);
+
+  const restart = useCallback(() => {
+    initEngine();
+    selectedPosRef.current = null;
+    aiBusyRef.current = false;
+    setState(getState());
+  }, [initEngine, getState]);
+
+  return { ...state, handleCellClick, dismissResult, restart };
 }

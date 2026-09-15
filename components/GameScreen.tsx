@@ -14,7 +14,7 @@ interface GameScreenProps {
 }
 
 export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
-  const { grid, scores, currentPlayer, selectedPos, validMoves, isThinking, gameOver, winner, tie, resultVisible, handleCellClick } = useGameEngine(difficulty);
+  const { grid, scores, currentPlayer, selectedPos, validMoves, isThinking, gameOver, winner, tie, resultVisible, handleCellClick, dismissResult, restart } = useGameEngine(difficulty);
 
   const resultText = gameOver
     ? tie
@@ -106,7 +106,7 @@ export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
         </Button>
       </div>
 
-      <Dialog open={gameOver && resultVisible} onOpenChange={onMenu}>
+      <Dialog open={gameOver && resultVisible} onOpenChange={dismissResult}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className={`text-center text-2xl ${resultColor}`}>
@@ -128,14 +128,24 @@ export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
             </div>
           </div>
 
-          <Button
-            onClick={onMenu}
-            variant="default"
-            size="lg"
-            className="w-full"
-          >
-            Volver al Menú
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={restart}
+              variant="default"
+              size="lg"
+              className="w-full"
+            >
+              Jugar Otra Vez
+            </Button>
+            <Button
+              onClick={onMenu}
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
+              Volver al Menú
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
