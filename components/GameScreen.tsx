@@ -12,7 +12,7 @@ interface GameScreenProps {
 }
 
 export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
-  const { grid, scores, currentPlayer, selectedPos, validMoves, isThinking, gameOver, winner, tie, handleCellClick } = useGameEngine(difficulty);
+  const { grid, scores, currentPlayer, selectedPos, validMoves, isThinking, gameOver, winner, tie, resultVisible, handleCellClick } = useGameEngine(difficulty);
 
   const resultText = gameOver
     ? tie
@@ -63,7 +63,7 @@ export function GameScreen({ difficulty, onMenu }: GameScreenProps) {
         ← Volver al Menú
       </button>
 
-      {gameOver && (
+      {gameOver && resultVisible && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full mx-4 text-center">
             <h1 className={`text-4xl font-bold mb-6 ${resultColor}`}>{resultText}</h1>

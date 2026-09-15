@@ -15,11 +15,13 @@ export interface GameState {
   gameOver: boolean;
   winner: number | null;
   tie: boolean;
+  resultVisible: boolean;
 }
 
 export function useGameEngine(difficultyName: string) {
   const engineRef = useRef<GameEngine | null>(null);
   const selectedPosRef = useRef<Position | null>(null);
+  const aiBusyRef = useRef(false);
 
   const initEngine = useCallback(() => {
     const engine = new GameEngine(difficultyName);
@@ -27,22 +29,27 @@ export function useGameEngine(difficultyName: string) {
     return engine;
   }, [difficultyName]);
 
-  const getState = useCallback((): GameState => {
-    const engine = engineRef.current!;
-    const sel = selectedPosRef.current;
-    const moves = sel ? engine.getValidMoves(engine.currentPlayer) : [];
-    return {
-      grid: engine.grid,
-      scores: engine.getScores(),
-      currentPlayer: engine.currentPlayer,
-      selectedPos: sel,
-      validMoves: moves,
-      isThinking: false,
-      gameOver: engine.gameOver,
-      winner: engine.winner,
-      tie: engine.tie,
-    };
-  }, []);
+  const getState = useCallback(
+    (overrides?: Partial<GameState>): GameState => {
+      const engine = engineRef.current!;
+      const sel = selectedPosRef.current;
+      const moves = sel ? engine.getValidMoves(engine.currentPlayer) : [];
+      return {
+        grid: engine.grid,
+        scores: engine.getScores(),
+        currentPlayer: engine.currentPlayer,
+        selectedPos: sel,
+        validMoves: moves,
+        isThinking: false,
+        gameOver: engine.gameOver,
+        winner: engine.winner,
+        tie: engine.tie,
+        resultVisible: false,
+        ...overrides,
+      };
+    },
+    []
+  );
 
   const [state, setState] = useState<GameState>(() => {
     const engine = initEngine();
@@ -50,16 +57,17 @@ export function useGameEngine(difficultyName: string) {
   });
 
   const runAITurn = useCallback(() => {
+    if (aiBusyRef.current) return;
+    aiBusyRef.current = true;
+
     const engine = engineRef.current!;
     selectedPosRef.current = null;
-    setState({
-      ...getState(),
-      isThinking: true,
-    });
+    setState(getState({ isThinking: true }));
 
     setTimeout(() => {
       if (engine.gameOver) {
         selectedPosRef.current = null;
+        aiBusyRef.current = false;
         setState(getState());
         return;
       }
@@ -70,9 +78,17 @@ export function useGameEngine(difficultyName: string) {
       }
       engine.advanceTurn();
 
-      selectedPosRef.current = null;
-      setState(getState());
-    }, 600);
+      if (engine.gameOver) {
+        setState(getState({ isThinking: false }));
+        setTimeout(() => {
+          aiBusyRef.current = false;
+          setState(getState({ resultVisible: true }));
+        }, 2000);
+      } else {
+        aiBusyRef.current = false;
+        setState(getState({ isThinking: false }));
+      }
+    }, 500);
   }, [getState]);
 
   const handleCellClick = useCallback(
@@ -122,7 +138,12 @@ export function useGameEngine(difficultyName: string) {
   );
 
   useEffect(() => {
-    if (state.currentPlayer === 2 && !state.gameOver && !state.isThinking) {
+    if (
+      state.currentPlayer === 2 &&
+      !state.gameOver &&
+      !state.isThinking &&
+      !aiBusyRef.current
+    ) {
       runAITurn();
     }
   }, [state.currentPlayer, state.isThinking, state.gameOver, runAITurn]);
