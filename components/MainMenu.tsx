@@ -1,6 +1,7 @@
 "use client";
 
 import { APP_VERSION } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
 
 interface MainMenuProps {
   onNavigate: (view: string) => void;
@@ -13,30 +14,36 @@ export function MainMenu({ onNavigate }: MainMenuProps) {
       <p className="text-gray-500 mb-8">Estrategia con movimientos de caballo</p>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
-        <button
+        <Button
           onClick={() => onNavigate("difficulty")}
-          className="w-full py-3 px-6 bg-emerald-500 text-white rounded-lg text-lg font-semibold hover:bg-emerald-600 transition-colors"
+          variant="default"
+          size="lg"
+          className="w-full"
         >
           Clásico
-        </button>
+        </Button>
 
-        <button
+        <Button
           disabled
-          className="w-full py-3 px-6 bg-gray-200 text-gray-400 rounded-lg text-lg font-semibold cursor-not-allowed"
+          variant="default"
+          size="lg"
+          className="w-full"
           title="Próximamente"
         >
           Personalizado — Próximamente
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => onNavigate("about")}
-          className="w-full py-3 px-6 bg-gray-100 text-gray-700 rounded-lg text-lg font-semibold hover:bg-gray-200 transition-colors"
+          variant="ghost"
+          size="lg"
+          className="w-full"
         >
           Sobre Nosotros
-        </button>
+        </Button>
       </div>
 
-      <div className="text-xs text-gray-400 text-center py-4 select-none">
+      <div className="text-xs text-muted-foreground text-center py-4 select-none">
         v{APP_VERSION}
       </div>
     </div>

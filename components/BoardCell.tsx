@@ -79,7 +79,7 @@ export function BoardCell({ state, isSelected, isValidMove, onClick }: BoardCell
   if (isSelected) ring = "ring-2 ring-blue-400 ring-offset-2";
   else if (isValidMove) ring = "ring-2 ring-yellow-400 ring-offset-1";
 
-  const bg = isTrail ? "bg-emerald-50" : "bg-white";
+  const bg = isTrail ? "bg-emerald-950/20" : "bg-card";
   const cursor = isOccupied || isValidMove ? "cursor-pointer" : "cursor-default";
 
   return (

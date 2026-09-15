@@ -1,5 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+
 interface DifficultySelectProps {
   onSelect: (difficulty: string) => void;
   onBack: () => void;
@@ -15,28 +18,39 @@ export function DifficultySelect({ onSelect, onBack }: DifficultySelectProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-dvh p-4">
       <h1 className="text-2xl font-bold mb-2">Seleccionar Dificultad</h1>
-      <p className="text-gray-500 mb-8">Clásico — 1 vs IA</p>
+      <p className="text-muted-foreground mb-8">Clásico — 1 vs IA</p>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
         {DIFFICULTIES.map((d) => (
-          <button
-            key={d.name}
-            onClick={() => onSelect(d.name)}
-            className="w-full py-4 px-6 bg-white border-2 border-emerald-500 text-emerald-700 rounded-lg text-left hover:bg-emerald-50 transition-colors"
-          >
-            <span className="text-lg font-semibold">{d.name}</span>
-            <br />
-            <span className="text-sm text-gray-500">{d.desc}</span>
-          </button>
+          <Card key={d.name} className="w-full">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{d.name}</span>
+                <span className="text-xs text-muted-foreground">Prof. {d.depth}</span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-muted-foreground mb-3">{d.desc}</p>
+              <Button
+                onClick={() => onSelect(d.name)}
+                variant="outline"
+                size="lg"
+                className="w-full"
+              >
+                Jugar
+              </Button>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <button
+      <Button
         onClick={onBack}
-        className="mt-8 text-gray-500 hover:text-gray-700 transition-colors"
+        variant="link"
+        className="mt-8"
       >
         ← Volver al Menú
-      </button>
+      </Button>
     </div>
   );
 }
