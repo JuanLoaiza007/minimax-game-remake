@@ -58,15 +58,21 @@ export function useGameEngine(difficultyName: string) {
     });
 
     setTimeout(() => {
+      if (engine.gameOver) {
+        selectedPosRef.current = null;
+        setState(getState());
+        return;
+      }
+
       const aiMove = engine.getAIMove();
       if (aiMove) {
         engine.applyMove(aiMove);
-        engine.switchTurn();
-        engine.checkGameEnd();
       }
+      engine.advanceTurn();
+
       selectedPosRef.current = null;
       setState(getState());
-    }, 50);
+    }, 600);
   }, [getState]);
 
   const handleCellClick = useCallback(
@@ -81,7 +87,7 @@ export function useGameEngine(difficultyName: string) {
       if (clickedState === "p1") {
         const moves = engine.getValidMoves(1);
         if (moves.length === 0) {
-          engine.checkGameEnd();
+          engine.advanceTurn();
           selectedPosRef.current = null;
           setState(getState());
           return;
@@ -96,8 +102,7 @@ export function useGameEngine(difficultyName: string) {
         if (isValidMove(from, clickedPos, engine.grid)) {
           const move: Move = { from, to: clickedPos };
           engine.applyMove(move);
-          engine.switchTurn();
-          engine.checkGameEnd();
+          engine.advanceTurn();
 
           if (engine.gameOver) {
             selectedPosRef.current = null;

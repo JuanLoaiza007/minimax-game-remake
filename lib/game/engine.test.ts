@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { GameEngine } from "./engine";
-import { Board } from "./board";
 import { type Move } from "./types";
 
 describe("GameEngine", () => {
@@ -12,6 +11,7 @@ describe("GameEngine", () => {
     expect(engine.tie).toBe(false);
     expect(engine.depth).toBe(4);
     expect(engine.difficultyName).toBe("Amateur");
+    expect(engine.turnQueue).toEqual([1, 2]);
     const [s1, s2] = engine.getScores();
     expect(s1).toBe(1);
     expect(s2).toBe(1);
@@ -39,53 +39,45 @@ describe("GameEngine", () => {
     expect(s1).toBe(2);
   });
 
-  it("switchTurn alternates player", () => {
+  it("advanceTurn cycles to next player in queue", () => {
     const engine = new GameEngine("Amateur");
     engine.applyMove({ from: { row: 0, col: 0 }, to: { row: 1, col: 2 } });
-    engine.switchTurn();
+    engine.advanceTurn();
     expect(engine.currentPlayer).toBe(2);
     expect(engine.gameOver).toBe(false);
+    expect(engine.turnQueue).toEqual([2, 1]);
   });
 
-  it("continues game when only one player is blocked", () => {
+  it("advanceTurn ejects blocked player and lets the other continue", () => {
     const engine = new GameEngine("Amateur");
     engine.applyMove({ from: { row: 0, col: 0 }, to: { row: 1, col: 2 } });
     // Block player 2's moves from (6,4): (5,2) and (4,3)
     engine.board.setCell({ row: 5, col: 2 }, "t1");
     engine.board.setCell({ row: 4, col: 3 }, "t1");
-    engine.switchTurn();
+    engine.advanceTurn();
+    // Player 2 is blocked → ejected. Player 1 goes again.
     expect(engine.gameOver).toBe(false);
     expect(engine.currentPlayer).toBe(1);
-    expect(engine.blocked).toEqual([2]);
+    expect(engine.turnQueue).toEqual([1]);
   });
 
-  it("ends game only when both players are blocked via checkGameEnd", () => {
+  it("advanceTurn ends game when both players are ejected from queue", () => {
     const engine = new GameEngine("Amateur");
     engine.applyMove({ from: { row: 0, col: 0 }, to: { row: 1, col: 2 } });
-    // Block player 2's moves from (6,4): (5,2) and (4,3)
+    // Block player 2 from (6,4)
     engine.board.setCell({ row: 5, col: 2 }, "t1");
     engine.board.setCell({ row: 4, col: 3 }, "t1");
-    engine.switchTurn();
-    expect(engine.gameOver).toBe(false);
-
-    // Block all of player 1's moves from (1,2): (3,3), (3,1), (2,4), (2,0), (0,4)
+    engine.advanceTurn();
+    expect(engine.currentPlayer).toBe(1);
+    // Block player 1 at (1,2): (3,3), (3,1), (2,4), (2,0), (0,4)
     engine.board.setCell({ row: 3, col: 3 }, "t2");
     engine.board.setCell({ row: 3, col: 1 }, "t2");
     engine.board.setCell({ row: 2, col: 4 }, "t2");
     engine.board.setCell({ row: 2, col: 0 }, "t2");
     engine.board.setCell({ row: 0, col: 4 }, "t2");
-
-    const ended = engine.checkGameEnd();
-    expect(ended).toBe(true);
+    // advanceTurn shifts player 1 — blocked → ejected → queue empty
+    engine.advanceTurn();
     expect(engine.gameOver).toBe(true);
-  });
-
-  it("checkGameEnd returns false when a player can still move", () => {
-    const engine = new GameEngine("Amateur");
-    engine.applyMove({ from: { row: 0, col: 0 }, to: { row: 1, col: 2 } });
-    const ended = engine.checkGameEnd();
-    expect(ended).toBe(false);
-    expect(engine.gameOver).toBe(false);
   });
 
   it("getAIMove returns a valid move", () => {

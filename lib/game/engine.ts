@@ -37,7 +37,7 @@ export class GameEngine {
   gameOver: boolean;
   winner: PlayerId | null;
   tie: boolean;
-  blocked: PlayerId[];
+  turnQueue: PlayerId[];
 
   constructor(difficultyName: string) {
     this.board = new Board(7, 5);
@@ -48,7 +48,7 @@ export class GameEngine {
     this.gameOver = false;
     this.winner = null;
     this.tie = false;
-    this.blocked = [];
+    this.turnQueue = [1, 2];
   }
 
   get grid(): BoardState {
@@ -89,53 +89,25 @@ export class GameEngine {
     throw new Error(`Player ${playerId} position not found`);
   }
 
-  switchTurn(): void {
+  private canPlayerMove(playerId: PlayerId): boolean {
+    try {
+      const pos = this.findPlayerPosition(playerId);
+      return canMoveFrom(pos, this.board.getState());
+    } catch {
+      return false;
+    }
+  }
+
+  advanceTurn(): void {
     if (this.gameOver) return;
 
-    const nextPlayer = opponentId(this.currentPlayer);
-    const nextPos = this.findPlayerPosition(nextPlayer);
+    const previousPlayer = this.turnQueue.shift()!;
 
-    if (!canMoveFrom(nextPos, this.board.getState())) {
-      this.blocked.push(nextPlayer);
-
-      const currentPos = this.findPlayerPosition(this.currentPlayer);
-      if (!canMoveFrom(currentPos, this.board.getState())) {
-        this.blocked.push(this.currentPlayer);
-        this.gameOver = true;
-        const [s1, s2] = this.getScores();
-        if (s1 > s2) {
-          this.winner = 1;
-        } else if (s2 > s1) {
-          this.winner = 2;
-        } else {
-          this.tie = true;
-        }
-        return;
-      }
-
-      return;
+    if (this.canPlayerMove(previousPlayer)) {
+      this.turnQueue.push(previousPlayer);
     }
 
-    this.currentPlayer = nextPlayer;
-  }
-
-  getAIMove(): Move | null {
-    return mejorJugada(this.board.getState(), this.currentPlayer, this.depth);
-  }
-
-  checkGameEnd(): boolean {
-    if (this.gameOver) return true;
-
-    for (const p of [1, 2] as PlayerId[]) {
-      const pos = this.findPlayerPosition(p);
-      if (!canMoveFrom(pos, this.board.getState())) {
-        if (!this.blocked.includes(p)) {
-          this.blocked.push(p);
-        }
-      }
-    }
-
-    if (this.blocked.length >= 2) {
+    if (this.turnQueue.length === 0) {
       this.gameOver = true;
       const [s1, s2] = this.getScores();
       if (s1 > s2) {
@@ -145,9 +117,17 @@ export class GameEngine {
       } else {
         this.tie = true;
       }
-      return true;
+      return;
     }
 
-    return false;
+    this.currentPlayer = this.turnQueue[0];
+
+    if (!this.canPlayerMove(this.currentPlayer)) {
+      this.advanceTurn();
+    }
+  }
+
+  getAIMove(): Move | null {
+    return mejorJugada(this.board.getState(), this.currentPlayer, this.depth);
   }
 }
